@@ -50,14 +50,17 @@ services:
     container_name: db_tradingbot
     image: mysql:latest
     restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: MYSQL_ROOT_PASSWORD
-      MYSQL_DATABASE: tradingbot
-      MYSQL_USER: MYSQL_USER
-      MYSQL_PASSWORD: MYSQL_PASSWORD
+    env_file: 
+      - ./api/.env
     ports:
       - "3306:3306"
-    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
@@ -88,6 +91,7 @@ volumes:
   db_tradingbot_data: {}
   node_modules: {}
   pythonvolume:
+  db_data:
 
 networks:
   default:
